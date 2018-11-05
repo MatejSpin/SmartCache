@@ -26,16 +26,30 @@ namespace SmartCache.Controllers
         [HttpGet("{email}")]
         public async Task<IActionResult> Get(string email)
         {
-            MailAddress mailAddress = new MailAddress(email);
-            var result = this.orleansClient.GetGrain<IEmailsGrain>(mailAddress.Host);
-
-            bool resultEmail = await result.HasEmailAsync(email);
-            if (!resultEmail)
+            try
             {
-                return NotFound();
-            }
+                MailAddress mailAddress = new MailAddress(email);
+                var result = this.orleansClient.GetGrain<IEmailsGrain>(mailAddress.Host);
 
-            return Ok();
+                bool resultEmail = await result.HasEmailAsync(email);
+                if (!resultEmail)
+                {
+                    return NotFound();
+                }
+
+                return Ok();
+            }
+            catch (FormatException ex)
+            {
+                //log error
+                ModelState.AddModelError("email", ex.Message);
+                return ValidationProblem();
+            }
+            catch (Exception ex)
+            {
+                //log error
+                return BadRequest();
+            }
         }
 
         // POST: api/Email
@@ -46,7 +60,7 @@ namespace SmartCache.Controllers
             {
                 MailAddress mailAddress = new MailAddress(email);
                 var result = this.orleansClient.GetGrain<IEmailsGrain>(mailAddress.Host);
-       
+
                 await result.AddEmailAsync(email);
                 return Created("", "");
             }
