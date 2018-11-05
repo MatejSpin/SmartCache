@@ -52,7 +52,6 @@ namespace SmartCache.Controllers
             }
         }
 
-        // POST: api/Email
         [HttpPost("{email}")]
         public async Task<IActionResult> Post(string email)
         {
