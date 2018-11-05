@@ -45,8 +45,7 @@ namespace SmartCache.Grains
         /// <returns>true if email exists, otherwise false</returns>
         public Task<bool> HasEmailAsync(string email)
         {
-            string value;
-            return Task.FromResult(State.BreachedEmails.TryGetValue(email, out value));
+            return Task.FromResult(State.BreachedEmails.Contains(email));
         }
 
         /// <summary>
