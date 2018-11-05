@@ -12,7 +12,11 @@ namespace SmartContracts.Silo
     {
         static void Main(string[] args)
         {
-            StartSilo().GetAwaiter().GetResult();
+            var host = StartSilo().GetAwaiter().GetResult();
+            Console.WriteLine("Silo started! Press any key to stop!");
+            Console.ReadLine();
+            host.StopAsync().GetAwaiter().GetResult();
+            Console.WriteLine("Silo stopped! Press any key to close!");
             Console.ReadLine();
         }
 
