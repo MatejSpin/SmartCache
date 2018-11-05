@@ -61,8 +61,13 @@ namespace SmartCache.Controllers
                 MailAddress mailAddress = new MailAddress(email);
                 var result = this.orleansClient.GetGrain<IEmailsGrain>(mailAddress.Host);
 
+                if(await result.HasEmailAsync(email))
+                {
+                    return Conflict();
+                }
+                
                 await result.AddEmailAsync(email);
-                return Created("", "");
+                return Created(new Uri("/", UriKind.Relative), email);
             }
             catch (FormatException ex)
             {
