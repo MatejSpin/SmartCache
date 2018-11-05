@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Configuration;
+using SmartCache.Service;
 
 namespace SmartCache.Web
 {
@@ -55,7 +56,7 @@ namespace SmartCache.Web
         {
             var orleansClient = CreateOrleansClient();
 
-            services.AddSingleton(orleansClient);
+            services.AddSingleton(new EmailsService(orleansClient));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

@@ -1,6 +1,6 @@
 ﻿using Orleans;
 using Orleans.Providers;
-using SmartCache.Contracts;
+using SmartCache.Contracts.Grains;
 using SmartCache.Grains.Model;
 using System;
 using System.Collections.Generic;

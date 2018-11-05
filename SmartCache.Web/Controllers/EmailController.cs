@@ -2,6 +2,9 @@
 using Orleans;
 using Orleans.Configuration;
 using SmartCache.Contracts;
+using SmartCache.Contracts.Grains;
+using SmartCache.Service;
+using SmartCache.Service.Models.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +20,10 @@ namespace SmartCache.Controllers
     [ApiController]
     public class EmailController : ControllerBase
     {
-        private IClusterClient orleansClient;
-        public EmailController(IClusterClient orleansClient)
+        private EmailsService emailsService;
+        public EmailController(EmailsService emailsService)
         {
-            this.orleansClient = orleansClient;
+            this.emailsService = emailsService;
         }
 
         [HttpGet("{email}")]
@@ -28,10 +31,7 @@ namespace SmartCache.Controllers
         {
             try
             {
-                MailAddress mailAddress = new MailAddress(email);
-                var result = this.orleansClient.GetGrain<IEmailsGrain>(mailAddress.Host);
-
-                bool resultEmail = await result.HasEmailAsync(email);
+                bool resultEmail = await emailsService.HasEmailAsync(email);
                 if (!resultEmail)
                 {
                     return NotFound();
@@ -39,15 +39,9 @@ namespace SmartCache.Controllers
 
                 return Ok();
             }
-            catch (FormatException ex)
+            catch (EmailsServiceException ex)
             {
-                //log error
-                ModelState.AddModelError("email", ex.Message);
-                return ValidationProblem();
-            }
-            catch (Exception ex)
-            {
-                //log error
+                //log error, maybe provide info to client
                 return BadRequest();
             }
         }
@@ -57,10 +51,7 @@ namespace SmartCache.Controllers
         {
             try
             {
-                MailAddress mailAddress = new MailAddress(email);
-                var result = this.orleansClient.GetGrain<IEmailsGrain>(mailAddress.Host);
-     
-                bool emailAdded = await result.AddEmailAsync(email);
+                bool emailAdded = await emailsService.AddEmailAsync(email);
 
                 if (!emailAdded)
                 {
@@ -69,15 +60,9 @@ namespace SmartCache.Controllers
 
                 return Created(new Uri("/", UriKind.Relative), email);
             }
-            catch (FormatException ex)
+            catch (EmailsServiceException ex)
             {
-                //log error
-                ModelState.AddModelError("email", ex.Message);
-                return ValidationProblem();
-            }
-            catch (Exception ex)
-            {
-                //log error
+                //log error, maybe provide info to client
                 return BadRequest();
             }
         }

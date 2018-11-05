@@ -1,10 +1,9 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
-namespace SmartCache.Contracts
+namespace SmartCache.Contracts.Services
 {
-    public interface IEmailsGrain : IGrainWithStringKey
+    public interface IEmailsService
     {
         Task<bool> AddEmailAsync(string email);
         Task<bool> HasEmailAsync(string email);
